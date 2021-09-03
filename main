@@ -24,6 +24,7 @@ added buildings!
 '''
 
 import random
+import math
 
 #user set parameters
 subject_count = 10000
@@ -37,6 +38,8 @@ starting_inf = 1
 daily_actions = 3
 
 building_count = 30
+
+home_count = 999
 
 #setup
 one = [1]
@@ -61,7 +64,7 @@ for x in random.sample(range(subject_count), k = starting_inf):
     population_condition[x] = 1
 
 #assigning what building each subject is going in
-def move():
+def work():
 
     activity_determine = [subject_count]
 
@@ -83,12 +86,10 @@ def move():
     
     one[0] = 1
 
-
 #INFECT
 def infection():
 
     for b in building_list:
-        one [0] += 1
 
         building_sus = [0]
         building_inf = [0]
@@ -111,12 +112,57 @@ def infection():
                         population_condition[x] = 1
                 current_inf[0] = building_inf[0]
 
-    one[0] = 1
-
     for b in building_list:
         b.clear()
 
     activity.clear()
+
+#homes
+home_list = [[] for x in range(1, home_count + 1)]
+
+#Subject Per Home
+sph = subject_count // home_count
+print (sph)
+
+#assigning subjects to houses
+for h in home_list:
+    while one[0] <= sph and zero[0] < subject_count:
+        h.append(zero[0])
+        one[0] += 1
+        zero[0] += 1
+    one[0] = 1
+
+for x in range(zero[0], subject_count):
+    home_list[-1].append(x)
+
+zero[0] = 0
+print (home_list)
+
+#home infection
+def home_inf():
+
+    for h in home_list:
+
+        building_sus = [0]
+        building_inf = [0]
+
+        for x in h:
+            if population_condition[x] == 0:
+                building_sus[0] += 1
+
+        for x in h:
+            if population_condition[x] == 1:
+                building_inf[0] += 1
+
+        current_inf = [building_inf[0]]
+
+        for x in h:
+            if population_condition[x] == 0:
+                while current_inf[0] > 0:
+                    current_inf[0] -= 1
+                    if random.random() < rate:
+                        population_condition[x] = 1
+                current_inf[0] = building_inf[0]
 
 #running the days
 current_day = [1]
@@ -125,12 +171,14 @@ print ("Infected: " + str(population_condition.count(1)))
 while current_day[0] <= total_day:
 
     while one_a[0] <= daily_actions:
-        move()
+        work()
         infection()
 
         one_a[0] += 1
 
     one_a[0] = 1
+
+    home_inf()
 
     print ("Day " + str(current_day[0]))
     print ("Infected: " + str(population_condition.count(1)))
