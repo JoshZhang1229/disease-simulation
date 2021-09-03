@@ -15,8 +15,10 @@ Hardest tasks:
 buildings!!!
 recovery
 home phase
+number of daily interaction
 
 2021/09/03
+added daily number of interactions
 
 '''
 
@@ -31,11 +33,15 @@ total_day = 30
 
 starting_inf = 1
 
+daily_actions = 3
+
 #buildings = 5
 
 #setup
 one = [1]
 zero = [0]
+
+one_a = [1]
 
 activity = []
 
@@ -125,8 +131,15 @@ current_day = [1]
 
 print ("Infected: " + str(population_condition.count(1))) 
 while current_day[0] <= total_day:
-    move()
-    infection()
+
+    while one_a[0] <= daily_actions:
+        move()
+        infection()
+
+        one_a[0] += 1
+
+    one_a[0] = 1
+
     print ("Day " + str(current_day[0]))
     print ("Infected: " + str(population_condition.count(1)))
 
