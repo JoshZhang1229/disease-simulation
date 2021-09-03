@@ -19,23 +19,24 @@ number of daily interaction
 
 2021/09/03
 added daily number of interactions
+added buildings!
 
 '''
 
 import random
 
 #user set parameters
-subject_count = 1000
+subject_count = 10000
 
 rate = 0.001
 
-total_day = 30
+total_day = 10
 
 starting_inf = 1
 
 daily_actions = 3
 
-#buildings = 5
+building_count = 30
 
 #setup
 one = [1]
@@ -45,13 +46,8 @@ one_a = [1]
 
 activity = []
 
-build_1_list = []
-build_2_list = []
-build_3_list = []
-build_4_list = []
-build_5_list = []
-
-building_list = [build_1_list, build_2_list, build_3_list, build_4_list, build_5_list]
+#creating buildings
+building_list = [[] for x in range(1, building_count)]
 
 #setting up condition of the population
 #0=S 1=I 2=R
@@ -70,63 +66,59 @@ def move():
     activity_determine = [subject_count]
 
     while activity_determine[0] > 0:
-        activity.append(random.randint(1, 5))
+        activity.append(random.randint(1, building_count))
         activity_determine[0] -= 1
 
     activity_determine[0] = subject_count
 
     #getting lists for which subjects are in each building
-    while one[0] <= 5:
-        for x in activity:
-            if x == one[0]:
-                building_list[one[0] - 1].append(zero[0])
+    for b in building_list:
+        for a in activity:
+            if a == one[0]:
+                b.append(zero[0])
             zero[0] += 1
         
         zero[0] = 0
         one[0] += 1
-
+    
     one[0] = 1
+
 
 #INFECT
-
 def infection():
 
-    while one[0] <= 5:
-        for a in building_list:
-            one [0] += 1
+    for b in building_list:
+        one [0] += 1
 
-            building_sus = [0]
-            building_inf = [0]
+        building_sus = [0]
+        building_inf = [0]
 
-            for x in a:
-                if population_condition[x] == 0:
-                    building_sus[0] += 1
+        for x in b:
+            if population_condition[x] == 0:
+                building_sus[0] += 1
 
-            for x in a:
-                if population_condition[x] == 1:
-                    building_inf[0] += 1
+        for x in b:
+            if population_condition[x] == 1:
+                building_inf[0] += 1
 
-            current_inf = [building_inf[0]]
+        current_inf = [building_inf[0]]
 
-            for x in a:
-                if population_condition[x] == 0:
-                    while current_inf[0] > 0:
-                        current_inf[0] -= 1
-                        if random.random() < rate:
-                            population_condition[x] = 1
-                    current_inf[0] = building_inf[0]
+        for x in b:
+            if population_condition[x] == 0:
+                while current_inf[0] > 0:
+                    current_inf[0] -= 1
+                    if random.random() < rate:
+                        population_condition[x] = 1
+                current_inf[0] = building_inf[0]
 
     one[0] = 1
 
-    build_1_list.clear()
-    build_2_list.clear()
-    build_3_list.clear()
-    build_4_list.clear()
-    build_5_list.clear()
+    for b in building_list:
+        b.clear()
 
     activity.clear()
 
-#tallying up the days
+#running the days
 current_day = [1]
 
 print ("Infected: " + str(population_condition.count(1))) 
