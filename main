@@ -22,26 +22,64 @@ added daily number of interactions
 added buildings!
 added homes
 added recovery
+
+FINISHED!!!
 '''
 
 import random
+import matplotlib.pyplot as plt
 
 #user set parameters
-subject_count = 10000
 
-rate = 0.001
+rate = 0.1
+starting_inf = 1
 
-total_day = 20
+user_input_list = [1, 1, 1, 1, 1, 1]
 
-starting_inf = 10
+user_input_msg_list = ["Input population: ", "Input length of experiment (in days): ", 
+"Input number of actions per day: ", "Input amount of buildings: ", "Input amount of homes: ", 
+"Input length of infectivity: "]
 
-daily_actions = 3
+for x in range(6):
+    while True:
+        try:
+            current_input = int(input(user_input_msg_list[x]))
+            if current_input <= 0:
+                print("Invalid, input must be a positive integer")
+            else:
+                user_input_list[x] = current_input
+                break
+        except:
+            print("Invalid, input must be a positive integer")
 
-building_count = 1200
+subject_count = user_input_list[0]
+total_day = user_input_list[1]
+daily_actions = user_input_list[2]
+building_count = user_input_list[3]
+home_count = user_input_list[4]
+inf_length = user_input_list[5]
 
-home_count = 3000
+while True:
+    try:
+        current_input = float(input("Input infective rate: "))
+        if current_input <=0 or current_input >= 1:
+            print("Invalid, input must be a decimal between 0 and 1 (exclusive): ")
+        else:
+            rate = current_input
+            break
+    except:
+        print("Invalid, input must be a decimal between 0 and 1 (exclusive): ")
 
-inf_length = 3
+while True:
+    try:
+        current_input = int(input("Input starting number of infected: "))
+        if current_input <= 0 or current_input > subject_count:
+            print("Invalid, input must be a positive integer and can not be larger than the population")
+        else:
+            starting_inf = current_input
+            break
+    except:
+        print("Invalid, input must be a positive integer and can  not be larger than the population")
 
 #setup
 one = [1]
@@ -127,7 +165,7 @@ def infection():
 
     activity.clear()
 
-#homes
+#Homes
 home_list = [[] for x in range(1, home_count + 1)]
 
 #Subject Per Home
@@ -173,7 +211,7 @@ def home_inf():
                         rem_inf[x] = inf_length
                 current_inf[0] = building_inf[0]
 
-#removal
+#tickdown & removal
 def tickdown():
     for x in rem_inf:
         if x > 1:
@@ -189,6 +227,15 @@ def tickdown():
 #running the days
 current_day = [1]
 
+#preping for graph
+overtime_days = []
+for x in range(1, total_day + 1):
+    overtime_days.append(x)
+
+overtime_sus = []
+overtime_inf = []
+overtime_rem = []
+
 while current_day[0] <= total_day:
 
     while one_a[0] <= daily_actions:
@@ -203,9 +250,20 @@ while current_day[0] <= total_day:
 
     tickdown()
 
-    print ("Day " + str(current_day[0]))
-    print ("Suspectible: " + str(population_condition.count(0)))
-    print ("Infected: " + str(population_condition.count(1)))
-    print ("Removed: " + str(population_condition.count(2)))
+    overtime_sus.append(population_condition.count(0))
+    overtime_inf.append(population_condition.count(1))
+    overtime_rem.append(population_condition.count(2))
+
+    print ("Day: " + str(current_day[0]))
 
     current_day[0] += 1
+
+plt.plot(overtime_days, overtime_sus, label = "Susceptible")
+plt.plot(overtime_days, overtime_inf, label = "Infected")
+plt.plot(overtime_days, overtime_rem, label = "Removed")
+
+plt.xlabel('Days')
+plt.ylabel('Number of people')
+plt.title('SIR')
+plt.legend()
+plt.show()
