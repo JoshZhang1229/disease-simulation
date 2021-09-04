@@ -20,26 +20,28 @@ number of daily interaction
 2021/09/03
 added daily number of interactions
 added buildings!
-
+added homes
+added recovery
 '''
 
 import random
-import math
 
 #user set parameters
 subject_count = 10000
 
 rate = 0.001
 
-total_day = 10
+total_day = 20
 
-starting_inf = 1
+starting_inf = 10
 
 daily_actions = 3
 
-building_count = 30
+building_count = 1200
 
-home_count = 999
+home_count = 3000
+
+inf_length = 3
 
 #setup
 one = [1]
@@ -52,6 +54,12 @@ activity = []
 #creating buildings
 building_list = [[] for x in range(1, building_count)]
 
+#removal set up
+rem_inf = []
+
+for x in range(subject_count):
+    rem_inf.append(-1)
+
 #setting up condition of the population
 #0=S 1=I 2=R
 
@@ -62,6 +70,7 @@ for x in range(subject_count):
 
 for x in random.sample(range(subject_count), k = starting_inf):
     population_condition[x] = 1
+    rem_inf[x] = inf_length
 
 #assigning what building each subject is going in
 def work():
@@ -110,6 +119,7 @@ def infection():
                     current_inf[0] -= 1
                     if random.random() < rate:
                         population_condition[x] = 1
+                        rem_inf[x] = inf_length
                 current_inf[0] = building_inf[0]
 
     for b in building_list:
@@ -122,7 +132,6 @@ home_list = [[] for x in range(1, home_count + 1)]
 
 #Subject Per Home
 sph = subject_count // home_count
-print (sph)
 
 #assigning subjects to houses
 for h in home_list:
@@ -136,7 +145,6 @@ for x in range(zero[0], subject_count):
     home_list[-1].append(x)
 
 zero[0] = 0
-print (home_list)
 
 #home infection
 def home_inf():
@@ -162,12 +170,25 @@ def home_inf():
                     current_inf[0] -= 1
                     if random.random() < rate:
                         population_condition[x] = 1
+                        rem_inf[x] = inf_length
                 current_inf[0] = building_inf[0]
+
+#removal
+def tickdown():
+    for x in rem_inf:
+        if x > 1:
+            rem_inf[zero[0]] -= 1
+        elif x == 1:
+            rem_inf[zero[0]] = 0
+            population_condition[zero[0]] = 2 
+        
+        zero[0] += 1
+    
+    zero[0] = 0
 
 #running the days
 current_day = [1]
 
-print ("Infected: " + str(population_condition.count(1))) 
 while current_day[0] <= total_day:
 
     while one_a[0] <= daily_actions:
@@ -180,7 +201,11 @@ while current_day[0] <= total_day:
 
     home_inf()
 
+    tickdown()
+
     print ("Day " + str(current_day[0]))
+    print ("Suspectible: " + str(population_condition.count(0)))
     print ("Infected: " + str(population_condition.count(1)))
+    print ("Removed: " + str(population_condition.count(2)))
 
     current_day[0] += 1
